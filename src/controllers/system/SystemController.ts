@@ -1,11 +1,13 @@
 import { SystemBodyIgnore } from "../../constant/formated/ignore/system-ignore";
 import ControllerBase from "../base/ControllerBase";
+const VERSION = require('../../../version.json');
 
 export default class SystemController extends ControllerBase{
     async getSystem(){
         try {
             const result = await this.repository.system.getSystem();
-            return this.success(result);
+            console.log(result);
+            return this.success({...result, version:`${VERSION.major}.${VERSION.minor}.${VERSION.patch}.${VERSION.server}`});
         } catch (error) {
             return this.error(error);
         }

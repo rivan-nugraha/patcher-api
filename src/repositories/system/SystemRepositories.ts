@@ -29,7 +29,7 @@ export default class SystemRepositories extends RepositoryBase{
     }
 
     async getSystem(){
-        const result = await this.system.find().lean();
+        const result = await this.system.findOne().lean();
         return result;
     }
 
