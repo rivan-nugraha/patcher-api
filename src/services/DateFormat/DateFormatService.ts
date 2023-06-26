@@ -22,7 +22,7 @@ export default class DateFormatService{
     }
 
     localDate () {
-        const date = (moment.tz(new Date(), "Asia/Jakarta").format("YYYY-MM-DD") + " 00:00:00");
+        const date = (moment.tz(new Date(), "Asia/Jakarta").format("YYYY-MM-DD"));
         return date;
     }
 

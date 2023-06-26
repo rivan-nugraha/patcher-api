@@ -13,6 +13,11 @@ export default class SystemController extends ControllerBase{
 
     async installSystem(){
         try {
+            const checkSystem = await this.repository.system.getSystem();
+            if(checkSystem){
+                throw new Error("Failed Install System Because There's Installed System On Database")
+            }
+
             const formatedBody = await this.repository.global.service.formatStringObject.format(this.body, SystemBodyIgnore);
 
             if(formatedBody.kode_toko.length > 3){
