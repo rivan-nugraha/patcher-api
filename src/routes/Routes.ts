@@ -1,15 +1,32 @@
+import AuthRoutes from "./auth/AuthRoutes";
 import RoutesCollection from "./collections/RouteCollections";
+import DatabaseListRoutes from "./masters/DatabaseListRoutes";
+import ScriptRoutes from "./masters/ScriptRoutes";
+import StoreGroupRoutes from "./masters/StoreGroupRoutes";
+import StoreRoutes from "./masters/StoreRoutes";
 
-import BarangRoutes from "./masters/Barang/BarangRoutes";
 import { SystemRoutes } from "./system/SystemRoutes";
+import ExecutionRoutes from "./transactions/ExecutionRoutes";
 
 class Routes{
     private routeBuilders: any[];
     public emitter: any;
     constructor(){
         this.routeBuilders = [
-            new BarangRoutes(),
+            // Auth
+            new AuthRoutes(),
+
+            // Masters
+            new StoreGroupRoutes(),
+            new StoreRoutes(),
+            new DatabaseListRoutes(),
+            new ScriptRoutes(),
+
+            // Systems
             new SystemRoutes(),
+
+            // Transactions
+            new ExecutionRoutes(),
         ]
     }
 

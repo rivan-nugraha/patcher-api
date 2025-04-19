@@ -1,18 +1,6 @@
-import { System } from "../../entities/system/System";
+import System, { iSystem } from "../../entities/system/System";
 import RepositoryBase from "../base/RepositoryBase";
-
-interface iSystem{
-    tgl_system: string;
-    kode_toko: string;
-    nama_toko: string;
-    alamat_toko: string;
-    no_telp: string;
-    no_whatsapp: string;
-    installed_date: string;
-}
-
-export default class SystemRepositories extends RepositoryBase{
-    private system: any;
+export default class SystemRepositories extends RepositoryBase<iSystem>{
     constructor(db:any, jf: any, service: any){
         const sendColumn = {
             tgl_system: '$tgl_system',
@@ -24,17 +12,16 @@ export default class SystemRepositories extends RepositoryBase{
             installed_date: '$installed_date',
         };
 
-        super(db, jf, service, sendColumn);
-        this.system = new System;
+        super(db, jf, service, sendColumn, System);
     }
 
     async getSystem(){
-        const result = await this.system.findOne().lean();
+        const result = await this.genericModel.findOne().lean();
         return result;
     }
 
     async registerSystem(data: iSystem){
-        const System = new this.system(data);
+        const System = new this.genericModel(data);
         System.save();
         return `System Installed Successfull`;
     }

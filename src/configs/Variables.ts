@@ -3,13 +3,12 @@ class Variables {
   private jwtPrivateKey: any;
   private port: any;
   private urlDb: any;
-  private urlDigiAPI: any;
 
   constructor () {
-    this.mode = process.env.NGO_MODE_API;
-    this.jwtPrivateKey = process.env.NGO_JWTKEY_API;
-    this.port = process.env.NGO_PORT_API;
-    this.urlDb = process.env.NGO_URLDB_API;
+    this.mode = process.env.MODE_API;
+    this.jwtPrivateKey = process.env.JWTKEY_API;
+    this.port = process.env.PORT_API;
+    this.urlDb = process.env.URLDB_API;
 
     this.checkVariables();
   }

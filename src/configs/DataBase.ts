@@ -16,8 +16,6 @@ class DataBase {
 
   async connect () {
     const optionConnClient = {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
       retryWrites: true
     };
 

@@ -12,7 +12,7 @@ class ControllerBase{
     public res: any;
     public req: any;
     public io: any;
-    public logger: any;
+    public logger: Logger;
 
     constructor ({
       params,

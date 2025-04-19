@@ -4,8 +4,10 @@ import DateFormatService from "./DateFormat/DateFormatService";
 import FormatStringObject from "./FormatStringObject/FormatStringObject";
 import Logger from "./Logger/Logger";
 import { SendPartialSocket } from "./PartialSocket/PartialSocket";
+import ScriptRunner from "./Runner";
 import Security from "./Security/Security";
 import TransactionService from "./TransactionServices/TransactionServices";
+import UserService from "./UserService";
 
 class Services{
     private db: any;
@@ -20,6 +22,8 @@ class Services{
     public partialSocket: SendPartialSocket;
     public security: Security;
     public dateFormat: DateFormatService;
+    public scriptRunner: ScriptRunner;
+    public userService: UserService;
 
     constructor(db: any, variables: any){
         this.db = db;
@@ -36,6 +40,8 @@ class Services{
         this.partialSocket = new SendPartialSocket(this.cache);
         this.security = new Security(this.variables, this.cache);
         this.dateFormat = new DateFormatService();
+        this.scriptRunner = new ScriptRunner();
+        this.userService = new UserService();
     };
 }
 

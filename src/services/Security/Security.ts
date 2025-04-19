@@ -13,7 +13,8 @@ class Security {
 
   generateToken (userData: any) {
     const token = jwt.sign({
-      user_id: userData.user_id,
+      user_id: userData.username,
+      name: userData.name,
       level: userData.level,
       validate_time: new Date(),
       tgl_system: userData.tgl_system

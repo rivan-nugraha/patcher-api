@@ -126,11 +126,13 @@ class App{
             methods: ["GET", "POST"]
             }
         });
+
         io.on("connection", (socket: any) => {
             socket.on("end-socket", (data: any) => {
             socket.disconnect();
             });
         });
+        
         io.on("disconnect", (socket: any) => {
             socket.on("end-socket", (data: any) => {
             socket.disconnect();
