@@ -10,7 +10,7 @@ class CacheData {
   }
 
   storeCache (dataStore: any) {
-    const result = this.nodeCache.set(dataStore.user_id, { token: dataStore.token }, this._ttl);
+    const result = this.nodeCache.set(dataStore.username, { token: dataStore.token }, this._ttl);
     return result;
   }
 
@@ -25,7 +25,7 @@ class CacheData {
   }
 
   getCache (dataStore: any) {
-    const result = this.nodeCache.get(dataStore.user_id);
+    const result = this.nodeCache.get(dataStore.username);
     return result;
   }
 
@@ -35,12 +35,12 @@ class CacheData {
   }
 
   changeTTL (dataStore:any) {
-    const result = this.nodeCache.ttl(dataStore.user_id, this._ttl);
+    const result = this.nodeCache.ttl(dataStore.username, this._ttl);
     return result;
   }
 
   deleteCache (dataStore: any) {
-    const result = this.nodeCache.del(dataStore.user_id);
+    const result = this.nodeCache.del(dataStore.username);
     return result;
   }
 

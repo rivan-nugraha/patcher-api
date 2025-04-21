@@ -24,6 +24,10 @@ export class AuthController extends ControllerBase {
                 token,
             }
 
+            if (process.env.MODE_API === "production") {
+                await this.repository.global.service.cache.storeCache(result);
+            }
+
             return this.success(result);
         } catch (error) {
             this.logger.error(error);

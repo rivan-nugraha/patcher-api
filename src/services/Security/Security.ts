@@ -1,9 +1,10 @@
 import * as jwt from "jsonwebtoken";
+import CacheData from "../Cache/CacheData";
 
 class Security {
   private mode: any;
   private jwtPrivateKey: any;
-  private cacheData: any;
+  private cacheData: CacheData;
 
   constructor (variables: any, cacheData: any) {
     this.mode = variables.mode;
@@ -13,7 +14,7 @@ class Security {
 
   generateToken (userData: any) {
     const token = jwt.sign({
-      user_id: userData.username,
+      username: userData.username,
       name: userData.name,
       level: userData.level,
       validate_time: new Date(),
@@ -34,7 +35,7 @@ class Security {
       (req: any, res: any, next: any) => {
         const token = req.headers["x-auth-token"];
         if (!token) return res.status(401).send("Access denied. No token provided.");
-
+        
         try {
           // const decoded = jwt.verify(token, this.jwtPrivateKey);
           // req.user = decoded;
@@ -44,7 +45,7 @@ class Security {
             req.user = decoded;
           } else {
             req.user = {
-              user_id: "PUSAT"
+              username: "PUSAT"
             };
           }
           if (this.mode === "production" && !isTokenPusat && req.user.level !== "SU") {
