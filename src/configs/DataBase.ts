@@ -11,7 +11,15 @@ class DataBase {
     this.urlDb = urlDb;
     this.logger = logger;
 
-    this.connect();
+    this.init();
+  }
+
+  async init() {
+    await this.connect();
+
+
+    await this.dropExistingIndex();
+    await this.syncIndexes();
   }
 
   async connect () {
@@ -27,6 +35,32 @@ class DataBase {
       .catch((err: any) => {
         throw new Error(`ERROR DATABASE: ${err}`);
       });
+  }
+
+  async dropExistingIndex () {
+    const modelNames = mongoose.modelNames();
+    for (const modelName of modelNames) {
+      try {
+        const model = mongoose.model(modelName);
+        model.collection.dropIndexes();
+      } catch (err) {
+        console.error(`❌ Failed to sync indexes for ${modelName}:`, err.message);
+      }
+    }
+    console.log("✅ Existing Index Deleted");
+  }
+
+  async syncIndexes () {
+    const modelNames = mongoose.modelNames();
+    for (const modelName of modelNames) {
+      try {
+        const model = mongoose.model(modelName);
+        model.syncIndexes();
+      } catch (err) {
+        console.error(`❌ Failed to sync indexes for ${modelName}:`, err.message);
+      }
+    }
+    console.log("✅ Index Syncronized");
   }
 
   getDb () {

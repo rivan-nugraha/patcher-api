@@ -33,6 +33,17 @@ export default class ScriptController extends ControllerBase {
         }
     }
 
+    async getOne () {
+        try {
+            const query = this._buildQuery(this.query);
+            const data = (await this.repository.script.findBy(query))[0];
+
+            return this.success(data);
+        } catch (error) {
+            return this.error(error);
+        }
+    }
+
     async edit () {
         try {
             const param = this._buildQuery(this.params);
@@ -51,6 +62,7 @@ export default class ScriptController extends ControllerBase {
     async delete () {
         try {
             const param = this._buildQuery(this.params);
+            console.log(param);
             const exists = await this.repository.script.findOne(param);
             if (!exists) throw new Error("Script Not Found");
 

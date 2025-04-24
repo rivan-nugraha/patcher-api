@@ -4,7 +4,8 @@ import DatabaseListRoutes from "./masters/DatabaseListRoutes";
 import ScriptRoutes from "./masters/ScriptRoutes";
 import StoreGroupRoutes from "./masters/StoreGroupRoutes";
 import StoreRoutes from "./masters/StoreRoutes";
-
+import UserRoutes from "./masters/UserRoutes";
+import DashboardRoutes from "./system/DashboardRoutes";
 import { SystemRoutes } from "./system/SystemRoutes";
 import ExecutionRoutes from "./transactions/ExecutionRoutes";
 
@@ -21,9 +22,11 @@ class Routes{
             new StoreRoutes(),
             new DatabaseListRoutes(),
             new ScriptRoutes(),
+            new UserRoutes(),
 
             // Systems
             new SystemRoutes(),
+            new DashboardRoutes(),
 
             // Transactions
             new ExecutionRoutes(),

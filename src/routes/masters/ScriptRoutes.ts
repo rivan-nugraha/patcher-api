@@ -9,6 +9,7 @@ export default class ScriptRoutes extends RouteBase {
 
     getRoutes () {
         this.buildRoute(this.baseUri, "get", "get", false);
+        this.buildRoute(this.baseUri + "/getOne", "get", "getOne", false);
         this.buildRoute(this.baseUri, "post", "save", false);
         this.buildRoute(this.baseUri + "/:_id", "put", "edit", false);
         this.buildRoute(this.baseUri + "/:_id", "delete", "delete", false);

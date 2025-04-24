@@ -2,7 +2,7 @@ import { iUser } from "../../entities/masters/UserEntity/User";
 
 const SuperUserData: iUser = {
     username: "developer",
-    password: "checking",
+    password: "developer-b3r4sput1h",
     name: "Developer",
     division: "Engineer"
 }

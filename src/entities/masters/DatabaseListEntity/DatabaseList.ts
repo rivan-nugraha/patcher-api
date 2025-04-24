@@ -16,7 +16,7 @@ class DatabaseListEntity {
             connection_url: { type: String, required: true },
         });
 
-        DatabaseListSchema.index({ store_code: 1 }, { unique: true });
+        DatabaseListSchema.index({ code_url: 1 }, { unique: true });
         this.DatabaseList = model("tm_database_list", DatabaseListSchema, "tm_database_list");
     }
 }

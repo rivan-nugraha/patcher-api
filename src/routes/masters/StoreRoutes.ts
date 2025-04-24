@@ -8,10 +8,10 @@ export default class StoreRoutes extends RouteBase {
     }
 
     getRoutes () {
-        this.buildRoute(this.base, "get", "getStore", false);
-        this.buildRoute(this.base, "post", "createStore", false);
-        this.buildRoute(this.base + "/:_id", "put", "updateStore", false);
-        this.buildRoute(this.base + "/:_id", "delete", "deleteStore", false);
+        this.buildRoute(this.base, "get", "getStore", true);
+        this.buildRoute(this.base, "post", "createStore", true);
+        this.buildRoute(this.base + "/:_id", "put", "updateStore", true);
+        this.buildRoute(this.base + "/:_id", "delete", "deleteStore", true);
 
         return this.routes;
     }

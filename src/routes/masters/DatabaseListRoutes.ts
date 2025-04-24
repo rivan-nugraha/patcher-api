@@ -8,10 +8,10 @@ export default class DatabaseListRoutes extends RouteBase {
     }
 
     getRoutes () {
-        this.buildRoute(this.base, "get", "getDatabaseList", false);
-        this.buildRoute(this.base, "post", "createDatabaseList", false);
-        this.buildRoute(this.base + "/:_id", "put", "updateDatabaseList", false);
-        this.buildRoute(this.base + "/:_id", "delete", "deleteDatabaseList", false);
+        this.buildRoute(this.base, "get", "getDatabaseList", true);
+        this.buildRoute(this.base, "post", "createDatabaseList", true);
+        this.buildRoute(this.base + "/:_id", "put", "updateDatabaseList", true);
+        this.buildRoute(this.base + "/:_id", "delete", "deleteDatabaseList", true);
 
         return this.routes;
     }

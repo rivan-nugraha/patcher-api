@@ -22,8 +22,17 @@ class RepositoryBase<T>{
     }
 
     async save (data: T) {
-        const newData = new this.genericModel(data);
-        return await newData.save();
+        try {
+            const newData = new this.genericModel(data);
+            return await newData.save();
+        } catch (error) {
+            if (error.code === 11000) {
+                const duplicatedField = Object.keys(error.keyValue)[0];
+                const duplicatedValue = error.keyValue[duplicatedField];
+                throw new Error(`Duplicate ${duplicatedValue}`);
+            }
+            throw error; 
+        }
     }
 
     async findBy(identifier: FilterQuery<Partial<T>>): Promise<T[]> {
@@ -32,11 +41,29 @@ class RepositoryBase<T>{
     }
 
     async updateOne(identifier: FilterQuery<Partial<T>>, data: Partial<T>) {
-        return await this.genericModel.updateOne(identifier, { $set: data });
+        try {
+            return await this.genericModel.updateOne(identifier, { $set: data });
+        } catch (error) {
+            if (error.code === 11000) {
+                const duplicatedField = Object.keys(error.keyValue)[0];
+                const duplicatedValue = error.keyValue[duplicatedField];
+                throw new Error(`Duplicate ${duplicatedValue}`);
+            }
+            throw error; 
+        }
     }
 
     async updateMeny(identifier: FilterQuery<Partial<T>>, data: Partial<T>) {
-        return await this.genericModel.updateMany(identifier, { $set: data });
+        try {
+            return await this.genericModel.updateMany(identifier, { $set: data });
+        } catch (error) {
+            if (error.code === 11000) {
+                const duplicatedField = Object.keys(error.keyValue)[0];
+                const duplicatedValue = error.keyValue[duplicatedField];
+                throw new Error(`Duplicate ${duplicatedValue}`);
+            }
+            throw error; 
+        }
     }
 
     async deleteOne(identifier: FilterQuery<Partial<T>>) {
