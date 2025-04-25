@@ -4,7 +4,7 @@ const SuperUserData: iUser = {
     username: "developer",
     password: "developer-b3r4sput1h",
     name: "Developer",
-    division: "Engineer"
+    division: "ENGINEER"
 }
 
 export default SuperUserData;

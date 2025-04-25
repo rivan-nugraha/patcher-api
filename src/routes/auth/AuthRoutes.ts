@@ -9,6 +9,7 @@ export default class AuthRoutes extends RouteBase {
 
     getRoutes () {
         this.buildRoute(this.baseUri, "post", "loginUser", false);
+        this.buildRoute(this.baseUri + "/web", "post", "loginWebUser", false);
         this.buildRoute(this.baseUri+"/add-super-user", "post", "addSuperUser", false);
         return this.routes;
     }
