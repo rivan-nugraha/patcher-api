@@ -1,6 +1,7 @@
 import AuthRoutes from "./auth/AuthRoutes";
 import RoutesCollection from "./collections/RouteCollections";
 import DatabaseListRoutes from "./masters/DatabaseListRoutes";
+import ProgramRoutes from "./masters/ProgramRoutes";
 import ScriptRoutes from "./masters/ScriptRoutes";
 import StoreGroupRoutes from "./masters/StoreGroupRoutes";
 import StoreRoutes from "./masters/StoreRoutes";
@@ -23,6 +24,7 @@ class Routes{
             new DatabaseListRoutes(),
             new ScriptRoutes(),
             new UserRoutes(),
+            new ProgramRoutes(),
 
             // Systems
             new SystemRoutes(),

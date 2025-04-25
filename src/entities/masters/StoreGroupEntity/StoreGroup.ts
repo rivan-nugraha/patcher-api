@@ -4,6 +4,7 @@ export interface iStoreGroup {
     _id?: string;
     group_code: string;
     group_name: string;
+    program_code: string;
 }
 
 class StoreGroupEntity {
@@ -12,10 +13,10 @@ class StoreGroupEntity {
         const StoreGroupSchema = new Schema<iStoreGroup>({
             group_code: {type: String, required: true},
             group_name: {type: String, required: true},
+            program_code: {type: String, required: true},
         });
 
         StoreGroupSchema.index({ group_code: 1 }, { unique: true });
-
         this.StoreGroup = model("tm_store_group", StoreGroupSchema, "tm_store_group");
     }
 }

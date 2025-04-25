@@ -1,3 +1,4 @@
+import { FilterQuery, PipelineStage } from "mongoose";
 import Script, { iScript } from "../../entities/masters/ScriptEntity/Script";
 import RepositoryBase from "../base/RepositoryBase";
 
@@ -14,5 +15,37 @@ export default class ScriptRepositories extends RepositoryBase<iScript> {
             initialCode = "SC" + String(next).padStart(9, "0")
         }
         return initialCode;
+    }
+
+    async findByPopulated (identifier: FilterQuery<Partial<iScript>>): Promise<iScript[]> {
+        const aggregate: PipelineStage[] = [];
+
+        aggregate.push(
+            {
+                $match: identifier
+            }
+        );
+
+        aggregate.push(
+            {
+                $lookup: {
+                    from: 'tm_program',
+                    localField: 'program_code',
+                    foreignField: 'program_code',
+                    as: 'program'
+                }
+            }
+        );
+
+        aggregate.push(
+            {
+                $unwind: {
+                    path: '$program',
+                    preserveNullAndEmptyArrays: true,
+                }
+            }
+        );
+
+        return this.genericModel.aggregate(aggregate);
     }
 }

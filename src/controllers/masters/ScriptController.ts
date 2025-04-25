@@ -7,6 +7,7 @@ export default class ScriptController extends ControllerBase {
         try {
             const newCode = await this.repository.script.generateScriptCode();
             const newScript: iScript = {
+                program_code: this.body.program_code,
                 script_code: newCode,
                 script_title: this.body.script_title,
                 script_desc: this.body.script_desc,
@@ -25,7 +26,7 @@ export default class ScriptController extends ControllerBase {
     async get () {
         try {
             const query = this._buildQuery(this.query);
-            const data = await this.repository.script.findBy(query);
+            const data = await this.repository.script.findByPopulated(query);
 
             return this.success(data);
         } catch (error) {

@@ -12,6 +12,7 @@ import SystemRepositories from "./system/SystemRepositories";
 
 // Transaction
 import ExecutionRepository from "./transactions/ExecutionRepository";
+import ProgramRepositories from "./masters/ProgramRepositories";
 
 class Repository{
     private _db: any;
@@ -26,6 +27,7 @@ class Repository{
     public databaseList: DatabaseListRepositories;
     public script: ScriptRepositories;
     public user: UserRepositories
+    public program: ProgramRepositories;
 
     // System
     public system: SystemRepositories;
@@ -48,6 +50,7 @@ class Repository{
         this.databaseList = new DatabaseListRepositories(this._db, this._jf, this._service);
         this.script = new ScriptRepositories(this._db, this._jf, this._service);
         this.user = new UserRepositories(this._db, this._jf, this._service);
+        this.program = new ProgramRepositories(this._db, this._jf, this._service);
 
         // Systems
         this.system = new SystemRepositories(this._db, this._jf, this._service);

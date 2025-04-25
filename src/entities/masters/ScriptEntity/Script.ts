@@ -1,19 +1,24 @@
 import { model, Model, Schema } from "mongoose";
+import { iProgram } from "../ProgramEntity/Program";
 
 export interface iScript {
     _id?: string;
+    program_code: string;
     script_code: string;
     script_title: string;
     script_desc: string;
     script: string;
     status_verify: boolean;
     rejected: boolean;
+
+    program?: iProgram;
 }
 
 class ScriptEntity {
     public Script: typeof Model;
     constructor () {
         const ScriptSchema = new Schema<iScript>({
+            program_code: String,
             script_code: String,
             script_title: String,
             script_desc: String,
