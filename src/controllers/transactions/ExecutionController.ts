@@ -2,10 +2,13 @@ import iHistory from "../../interface/history.interface";
 import { iExecution } from "../../entities/transactions/ExecutionEntity/Execution";
 import ControllerBase from "../base/ControllerBase";
 import { FilterQuery } from "mongoose";
+import { MongoClient } from 'mongodb';
 
 export default class ExecutionController extends ControllerBase {
     async execute () {
         try {
+            const allPromises: Promise<void>[] = [];
+
             const getStore = await this.repository.store.findOne({ store_code: this.body.store_code });
             if (!getStore) throw new Error("Store Not Found");
             
@@ -15,17 +18,13 @@ export default class ExecutionController extends ControllerBase {
             const getScript = await this.repository.script.findOne({ script_code: this.body.script_code });
             if (!getScript) throw new Error("Script Not Found");
 
-            await this.repository.global.service.scriptRunner.execute(getUri.connection_url, getScript.script, getStore.db_name);
-            const statusExec: iExecution = {
-                store_code: getStore.store_code,
-                script_code: getScript.script_code,
-                exec_date: new Date(),
-                status_exec: "SUCCESS",
-                failed_reason: "-",
-                execute_by: this.user.name,
-            };
+            const client = new MongoClient(getUri.connection_url);
+            await client.connect();
 
-            await this.repository.execution.save(statusExec);
+            const promise = this._executeAndSaveStatus(client, getStore, getScript);
+            allPromises.push(promise);
+            await Promise.all(allPromises);
+
             return this.success("Success Execute")
         } catch (error) {
             const statusExec: iExecution = {
@@ -56,46 +55,33 @@ export default class ExecutionController extends ControllerBase {
     }
 
     private async _patchSingleStore (store_code: string, script_code: string[]): Promise<void> {
+        const getScript = await this.repository.script.findBy({ script_code: script_code });
+        if (!getScript.length) {
+            throw new Error("Scripts Not Found");
+        }
+        
         const getStore = await this.repository.store.findOne({ store_code });
         if (!getStore) {
             throw new Error("Store Not Found")
         }
 
-        const getScript = await this.repository.script.findBy({ script_code: script_code });
-            if (!getScript.length) {
-                throw new Error("Scripts Not Found");
+        const getUri = await this.repository.databaseList.findOne({ code_url: getStore.url_code });
+        if (!getUri) {
+            throw new Error("URI Not Found");
         }
 
+        console.log(getUri);
+
+        const allPromises: Promise<void>[] = [];
+
+        const client = new MongoClient(getUri.connection_url);
+        await client.connect();
         for (const script of getScript) {
-            const getUri = await this.repository.databaseList.findOne({ code_url: getStore.url_code });
-            if (!getUri) {
-                throw new Error("URI Not Found");
-            }
-
-            const result = await this.repository.global.service.scriptRunner.execute(getUri.connection_url, script.script, getStore.db_name);
-            if (result === "200") {
-                const statusExec: iExecution = {
-                    store_code: getStore.store_code,
-                    script_code: script.script_code,
-                    exec_date: new Date(),
-                    status_exec: "SUCCESS",
-                    failed_reason: "-",
-                    execute_by: this.user.name,
-                };
-
-                await this.repository.execution.save(statusExec);
-            } else {
-                const statusExec: iExecution = {
-                    store_code: getStore.store_code,
-                    script_code: script.script_code,
-                    exec_date: new Date(),
-                    status_exec: "FAILED",
-                    failed_reason: "-",
-                    execute_by: this.user.name,
-                };
-                await this.repository.execution.save(statusExec);
-            }
+            const promise = this._executeAndSaveStatus(client, getStore, script);
+            allPromises.push(promise);
         }
+        
+        await Promise.all(allPromises);
     }
 
     private async _patchGroupedStore (group_code: string, script_code: string[]): Promise<void> {
@@ -108,62 +94,48 @@ export default class ExecutionController extends ControllerBase {
         if (!getScript.length) {
             throw new Error("Scripts Not Found");
         }
+
+        const allPromises: Promise<void>[] = [];
+
         for (const store of getStore) {
             const getUri = await this.repository.databaseList.findOne({ code_url: store.url_code });
             if (!getUri) {
                 throw new Error("URI Not Found");
             }
+            const client = new MongoClient(getUri.connection_url);
+            await client.connect();
 
             for (const script of getScript) {
-                const result = await this.repository.global.service.scriptRunner.execute(getUri.connection_url, script.script, store.db_name);
-                if (result === "200") {
-                    const statusExec: iExecution = {
-                        store_code: store.store_code,
-                        script_code: script.script_code,
-                        exec_date: new Date(),
-                        status_exec: "SUCCESS",
-                        failed_reason: "-",
-                        execute_by: this.user.name,
-                    };
-    
-                    await this.repository.execution.save(statusExec);
-                } else {
-                    const statusExec: iExecution = {
-                        store_code: store.store_code,
-                        script_code: script.script_code,
-                        exec_date: new Date(),
-                        status_exec: "FAILED",
-                        failed_reason: "-",
-                        execute_by: this.user.name,
-                    };
-                    await this.repository.execution.save(statusExec);
-                }
+                const promise = this._executeAndSaveStatus(client, store, script);
+                allPromises.push(promise);
             }
         }
+
+        await Promise.all(allPromises);
     }
 
     async executeTest() {
         try {
-            const getStore = await this.repository.store.findOne({ store_code: "NQC" });
+            const allPromises: Promise<void>[] = [];
+
+            const getScript = await this.repository.script.findOne({ script_code: this.body.script_code });
+            if (!getScript) throw new Error("Script Not Found");
+
+            const getStoreGroup = await this.repository.storeGroup.findOne({ script_code: { $in: ["NQC", "GQC", "PQC"] }, program_code: getScript.program_code },)
+
+            const getStore = await this.repository.store.findOne({ store_code: { $in: ["NQC", "GQC", "PQC"] }, store_group: getStoreGroup.group_code });
             if (!getStore) throw new Error("Store Not Found");
             
             const getUri = await this.repository.databaseList.findOne({ code_url: getStore.url_code });
             if (!getUri) throw new Error("URI Not Found");
 
-            const getScript = await this.repository.script.findOne({ script_code: this.body.script_code });
-            if (!getScript) throw new Error("Script Not Found");
+            const client = new MongoClient(getUri.connection_url);
+            await client.connect();
 
-            await this.repository.global.service.scriptRunner.execute(getUri.connection_url, getScript.script, getStore.db_name);
-            const statusExec: iExecution = {
-                store_code: getStore.store_code,
-                script_code: getScript.script_code,
-                exec_date: new Date(),
-                status_exec: "SUCCESS TEST",
-                failed_reason: "-",
-                execute_by: this.user.name,
-            };
+            const promise = this._executeAndSaveStatus(client, getStore, getScript, true);
+            allPromises.push(promise);
 
-            await this.repository.execution.save(statusExec);
+            await Promise.all(allPromises);
             return this.success("Success Execute")
         } catch (error) {
             const statusExec: iExecution = {
@@ -199,10 +171,24 @@ export default class ExecutionController extends ControllerBase {
         }
     }
 
-    _buildQuery (param: Partial<iExecution>): FilterQuery<iExecution> {
+    private async _executeAndSaveStatus(client: MongoClient, store: any, script: any, isTest: boolean = false): Promise<void> {
+        const result = await this.repository.global.service.scriptRunner.execute(client, store.db_name, script.script);
+        console.log(result);
+        const statusExec: iExecution = {
+            store_code: store.store_code,
+            script_code: script.script_code,
+            exec_date: new Date(),
+            status_exec: result === "200" ? isTest ? "SUCCESS TEST" : "SUCCESS" : "FAILED",
+            failed_reason: result === "200" ? "-" : "Execution Failed",
+            execute_by: this.user.name,
+        };
+        await this.repository.execution.save(statusExec);
+    }
+
+    _buildQuery (param: any): FilterQuery<iExecution> {
         const query: FilterQuery<iExecution> = {};
         if (param.exec_date) {
-            const localDate = new Date(`${param.exec_date.toString().split(" ")[0]}T17:00:00+07:00`);
+            const localDate = new Date(`${param.exec_date.split("T")[0]}T17:00:00+07:00`);
             
             // Awal hari (00:00:00)
             const startOfDay = new Date(localDate)
@@ -215,6 +201,14 @@ export default class ExecutionController extends ControllerBase {
                 $gte: startOfDay,
                 $lte: endOfDay,
             }
+        }
+
+        if (param.store_code && param.store_code !== "ALL") {
+            query.store_code = param.store_code;
+        }
+
+        if (param.script_code && param.script_code !== "ALL"){
+            query.script_code = param.script_code;
         }
         return query;
     }
