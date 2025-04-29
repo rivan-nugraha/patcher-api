@@ -53,7 +53,13 @@ export default class StoreGroupController extends ControllerBase {
     private _buildQuery (param: Partial<iStoreGroup>): FilterQuery<Partial<iStoreGroup>> {
         const query: FilterQuery<Partial<iStoreGroup>> = {};
         if (param._id) query._id = param._id;
-        if (param.group_code) query.group_code = param.group_code;
+        if (param.group_code) {
+            if (param.group_code.includes("$")) {
+                query.group_code = new RegExp(param.group_code);
+            } else {
+                query.group_code = param.group_code
+            }
+        };
         if (param.group_name) query.group_name = param.group_name;
         if (param.program_code) query.program_code = param.program_code;
         return query;

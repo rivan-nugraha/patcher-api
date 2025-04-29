@@ -63,7 +63,6 @@ export default class ScriptController extends ControllerBase {
     async delete () {
         try {
             const param = this._buildQuery(this.params);
-            console.log(param);
             const exists = await this.repository.script.findOne(param);
             if (!exists) throw new Error("Script Not Found");
 
@@ -83,6 +82,7 @@ export default class ScriptController extends ControllerBase {
         if (param.script_title) query.script_title = param.script_title;
         if (param.rejected) query.rejected = param.rejected === "true";
         if (param.status_verify) query.status_verify = param.status_verify === "true";
+        if (param.program_code) query.program_code = param.program_code;
 
         return query;
     }

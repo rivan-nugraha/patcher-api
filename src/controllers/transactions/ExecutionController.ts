@@ -27,15 +27,6 @@ export default class ExecutionController extends ControllerBase {
 
             return this.success("Success Execute")
         } catch (error) {
-            const statusExec: iExecution = {
-                store_code: this.body.store_code,
-                script_code: this.body.script_code,
-                exec_date: new Date(),
-                status_exec: "FAILED",
-                failed_reason: error,
-                execute_by: this.user.name,
-            };
-            await this.repository.execution.save(statusExec);
             return this.error(error);
         }
     }
@@ -69,8 +60,6 @@ export default class ExecutionController extends ControllerBase {
         if (!getUri) {
             throw new Error("URI Not Found");
         }
-
-        console.log(getUri);
 
         const allPromises: Promise<void>[] = [];
 
@@ -121,9 +110,7 @@ export default class ExecutionController extends ControllerBase {
             const getScript = await this.repository.script.findOne({ script_code: this.body.script_code });
             if (!getScript) throw new Error("Script Not Found");
 
-            const getStoreGroup = await this.repository.storeGroup.findOne({ script_code: { $in: ["NQC", "GQC", "PQC"] }, program_code: getScript.program_code },)
-
-            const getStore = await this.repository.store.findOne({ store_code: { $in: ["NQC", "GQC", "PQC"] }, store_group: getStoreGroup.group_code });
+            const getStore = await this.repository.store.findOne({ store_code: this.body.store_code });
             if (!getStore) throw new Error("Store Not Found");
             
             const getUri = await this.repository.databaseList.findOne({ code_url: getStore.url_code });
@@ -138,17 +125,6 @@ export default class ExecutionController extends ControllerBase {
             await Promise.all(allPromises);
             return this.success("Success Execute")
         } catch (error) {
-            const statusExec: iExecution = {
-                store_code: "NQC",
-                script_code: this.body.script_code,
-                exec_date: new Date(),
-                status_exec: "FAILED",
-                failed_reason: error,
-                execute_by: this.user.name,
-            };
-
-            await this.repository.script.updateOne({ script_code: this.body.script_code }, { rejected: true });
-            await this.repository.execution.save(statusExec);
             return this.error(error);
         }
     }
@@ -160,8 +136,8 @@ export default class ExecutionController extends ControllerBase {
             const result: iHistory[] = getData.map((data) => {
                 return {
                     ...data,
-                    store_name: data.store.store_name,
-                    script_title: data.script.script_title,
+                    store_name: data.store.store_name || "Code Is Change Or Store Is Deleted",
+                    script_title: data.script.script_title || "Code Is Change Or Script Is Deleted",
                 }
             });
             return this.success(result);
@@ -173,7 +149,6 @@ export default class ExecutionController extends ControllerBase {
 
     private async _executeAndSaveStatus(client: MongoClient, store: any, script: any, isTest: boolean = false): Promise<void> {
         const result = await this.repository.global.service.scriptRunner.execute(client, store.db_name, script.script);
-        console.log(result);
         const statusExec: iExecution = {
             store_code: store.store_code,
             script_code: script.script_code,
