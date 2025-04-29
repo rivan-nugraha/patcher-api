@@ -163,7 +163,12 @@ export default class ExecutionController extends ControllerBase {
     _buildQuery (param: any): FilterQuery<iExecution> {
         const query: FilterQuery<iExecution> = {};
         if (param.exec_date) {
-            const localDate = new Date(`${param.exec_date.split("T")[0]}T17:00:00+07:00`);
+            let localDate;
+            if (param.exec_date.includes(" ")){
+                localDate = new Date(`${param.exec_date.split(" ")[0]}T17:00:00+07:00`);
+            } else {
+                localDate = new Date(`${param.exec_date.split("T")[0]}T17:00:00+07:00`);
+            }
             
             // Awal hari (00:00:00)
             const startOfDay = new Date(localDate)
